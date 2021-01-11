@@ -1,0 +1,30 @@
+name: 'Tevel Conan Authentication'
+description: 'Perform Tevel private registry conan authentication'
+inputs:
+    conan_user:
+      description: conan username
+      required: true
+    conan_password:
+      description: conan password
+      required: true
+    conan_registry:
+      description: conan private registry address
+      required: true
+    use_ssl:
+      description: use ssl authentication
+      required: false
+      default: "false"
+    registry_name:
+      description: name of the registry to use
+      required: false
+      default: "tevel-conan"
+runs:
+  using: "composite"
+  steps: 
+    - run: conan remote add ${{ inputs.registry_name }} ${{ inputs.conan_registry }} $${{ inputs.use_ssl }}
+      shell: sh
+    - run: conan user -p ${{ inputs.conan_password }} -r ${{ inputs.registry_name }} ${{ inputs.conan_user }}
+      shell: sh
+    - run: conan remote remove conan-center
+      shell: sh
+      
